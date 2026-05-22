@@ -11,6 +11,10 @@ from ..utils.alpha import ChannelWiseSum
 from ..logger import logger
 
 
+def _use_legacy_exporter(kwargs):
+    kwargs.setdefault("dynamo", False)
+
+
 class ONNXReflectionPadding(I2IBaseModel):
     def __init__(self):
         super().__init__({}, scale=1, offset=0, in_channels=3)
@@ -25,6 +29,7 @@ class ONNXReflectionPadding(I2IBaseModel):
          var pad = new ort.Tensor('int64', BigInt64Array.from([offset]), []);
          var out = await ses.run({"x": x, "left": pad, "right": pad, "top": pad, "bottom": pad});
         """
+        _use_legacy_exporter(kwargs)
         x = torch.rand([1, 3, 256, 256], dtype=torch.float32)
         pad = [512, 120, 512, 120]
         model = torch.jit.script(self.to_inference_model())
@@ -48,6 +53,7 @@ class ONNXReplicationPadding(I2IBaseModel):
         return F.pad(x, (left, right, top, bottom), mode="replicate")
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         """
          const ses = await ort.InferenceSession.create('./pad.onnx');
          var offset = BigInt(model_offset / model_scale);
@@ -95,6 +101,7 @@ class ONNXTTASplit(I2IBaseModel):
         return x
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         """
          const ses = await ort.InferenceSession.create('./tta_split.onnx');
          var tta_level = 2;
@@ -132,6 +139,7 @@ class ONNXTTAMerge(I2IBaseModel):
         return x
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         """
          const ses = await ort.InferenceSession.create('./tta_merge.onnx');
          var tta_level = 2;
@@ -170,6 +178,7 @@ class ONNXCreateSeamBlendingFilter(I2IBaseModel):
         return x
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         scale = 2
         offset = 16
         tile_size = 64
@@ -226,6 +235,7 @@ class ONNXAlphaBorderPadding(nn.Module):
         return torch.jit.script(net)
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         rgb = torch.zeros([3, 256, 256], dtype=torch.float32)
         alpha = torch.zeros([1, 256, 256], dtype=torch.float32)
         offset = torch.tensor(16, dtype=torch.int64)
@@ -253,6 +263,7 @@ class ONNXScale1x(I2IBaseModel):
         return F.pad(x, (pad, pad, pad, pad), mode="constant")
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         x = torch.rand([1, 3, 256, 256], dtype=torch.float32)
         model = self.to_inference_model()
         torch.onnx.export(
@@ -278,6 +289,7 @@ class ONNXAntialias(I2IBaseModel):
         return x
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         x = torch.rand([1, 3, 256, 256], dtype=torch.float32)
         model = self.to_inference_model()
         torch.onnx.export(
@@ -303,6 +315,7 @@ class ONNXResizeBicubic(nn.Module):
         return x
 
     def export_onnx(self, f, **kwargs):
+        _use_legacy_exporter(kwargs)
         kwargs["opset_version"] = 18
         x = torch.rand([1, 3, 256, 256], dtype=torch.float32)
         model = torch.jit.script(self.eval())

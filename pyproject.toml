@@ -1,0 +1,33 @@
+[project]
+name = "nunif-lock"
+version = "0.0.0"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "torch",
+    "torchvision",
+    "numpy<2.0.0",
+    "pillow",
+    "requests",
+    "tqdm",
+    "scipy",
+    "pyyaml",
+    "platformdirs",
+    "packaging",
+    "filelock",
+    "onnx",
+    "onnxscript",
+    "onnxconverter-common",
+]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu132", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+    { index = "pytorch-cu132", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu132"
+url = "https://download.pytorch.org/whl/cu132"
+explicit = true

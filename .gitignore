@@ -19,6 +19,7 @@ tmp
 !/models/.keep
 /waifu2x/pretrained_models
 /waifu2x/onnx_models
+/waifu2x/onnx_models_flat
 /waifu2x/web-config.ini  # for compatibilityfor
 /waifu2x/web/config.ini
 /waifu2x/public_html  # for compatibilityfor
